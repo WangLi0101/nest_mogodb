@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './common/response.interceptor';
+import { GlobalFilter } from './common/global.filter';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [UserModule],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalFilter,
+    },
+  ],
 })
 export class AppModule {}
