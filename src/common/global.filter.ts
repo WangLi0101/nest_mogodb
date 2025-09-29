@@ -2,6 +2,7 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  ForbiddenException,
   Inject,
   LoggerService,
 } from '@nestjs/common';
@@ -17,32 +18,50 @@ export class GlobalFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
-    const payload = exception.getResponse();
-    let errorPayload: any;
-    if (typeof payload === 'string') {
-      errorPayload = {
-        code: status,
-        message: payload,
-        path: request.url,
-        timestamp: new Date().toISOString(),
-      };
+    // http错误
+    if (exception instanceof ForbiddenException) {
+      const status = exception.getStatus();
+      const payload = exception.getResponse();
+      let errorPayload: any;
+      if (typeof payload === 'string') {
+        errorPayload = {
+          code: status,
+          message: payload,
+          path: request.url,
+          timestamp: new Date().toISOString(),
+        };
+      } else {
+        const { message } = payload as any;
+        errorPayload = {
+          code: status,
+          ...payload,
+          message: message.toString(),
+          path: request.url,
+          timestamp: new Date().toISOString(),
+        };
+      }
+      this.logger.error({
+        url: request.url,
+        method: request.method,
+        body: request.body,
+        ...errorPayload,
+      });
+      response.status(status).json(errorPayload);
     } else {
-      const { message } = payload;
-      errorPayload = {
-        code: status,
-        ...payload,
-        message: message.toString(),
+      // 其他错误
+      const errorPayload = {
+        code: 500,
+        ...exception,
         path: request.url,
         timestamp: new Date().toISOString(),
       };
+      this.logger.error({
+        url: request.url,
+        method: request.method,
+        body: request.body,
+        ...errorPayload,
+      });
+      response.status(500).json(errorPayload);
     }
-    this.logger.error({
-      url: request.url,
-      method: request.method,
-      body: request.body,
-      ...errorPayload,
-    });
-    response.status(status).json(errorPayload);
   }
 }
