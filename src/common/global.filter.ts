@@ -2,11 +2,11 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  HttpException,
   Inject,
   LoggerService,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ForbiddenException } from 'src/common/error';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 @Catch()
 export class GlobalFilter implements ExceptionFilter {
@@ -64,7 +64,7 @@ export class GlobalFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     // http错误
-    if (exception instanceof ForbiddenException) {
+    if (exception instanceof HttpException) {
       this.httpError(request, response, exception);
     } else {
       // 其他错误
