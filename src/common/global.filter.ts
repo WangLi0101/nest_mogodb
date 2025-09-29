@@ -1,31 +1,48 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  Inject,
+  LoggerService,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
-
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 @Catch()
 export class GlobalFilter implements ExceptionFilter {
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+  ) {}
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
     const payload = exception.getResponse();
-
+    let errorPayload: any;
     if (typeof payload === 'string') {
-      response.status(status).json({
+      errorPayload = {
         code: status,
         message: payload,
         path: request.url,
         timestamp: new Date().toISOString(),
-      });
+      };
     } else {
       const { message } = payload;
-      response.status(status).json({
+      errorPayload = {
         code: status,
         ...payload,
         message: message.toString(),
         path: request.url,
         timestamp: new Date().toISOString(),
-      });
+      };
     }
+    this.logger.error({
+      url: request.url,
+      method: request.method,
+      body: request.body,
+      ...errorPayload,
+    });
+    response.status(status).json(errorPayload);
   }
 }
