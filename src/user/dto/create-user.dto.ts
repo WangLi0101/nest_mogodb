@@ -1,5 +1,12 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { IsInt, IsString } from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { formatDate } from 'src/common/dayjs';
+
+// 性别枚举
+export enum Sex {
+  MALE = 1, // 男
+  FEMALE = 2, // 女
+}
 
 export class CreateUserDto {
   @IsString()
@@ -10,6 +17,11 @@ export class CreateUserDto {
 
   @IsString()
   breed: string;
+
+  @IsInt()
+  @IsOptional()
+  @IsEnum(Sex)
+  sex: Sex;
 }
 
 export class UserResponseDto {
@@ -28,4 +40,8 @@ export class UserResponseDto {
   @IsString()
   @Expose()
   breed: string;
+
+  @Expose()
+  @Transform(({ obj }) => formatDate(obj.createdAt))
+  createdAt: Date;
 }
