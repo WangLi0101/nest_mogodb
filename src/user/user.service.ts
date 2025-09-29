@@ -35,7 +35,7 @@ export class UserService {
     return this.userModel.findByIdAndDelete(id).exec();
   }
   testError() {
-    throw new Error('test error');
+    // throw new Error('test error');
     throw new ForbiddenException(ERROR_CODE.USER_ALREADY_EXISTS);
   }
 }
