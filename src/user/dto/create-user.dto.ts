@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsInt, IsString } from 'class-validator';
 
 export class CreateUserDto {
@@ -12,14 +12,20 @@ export class CreateUserDto {
   breed: string;
 }
 
-export class CreateUserResponseDto {
+export class UserResponseDto {
+  @Transform(({ obj }) => obj._id)
+  @Expose()
+  userId: string;
+
   @IsString()
+  @Expose()
   name: string;
 
   @IsInt()
+  @Expose()
   age: number;
 
   @IsString()
-  @Exclude()
+  @Expose()
   breed: string;
 }

@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, CreateUserResponseDto } from './dto/create-user.dto';
+import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseDto } from 'src/common/decorator';
 
@@ -16,13 +16,13 @@ import { ResponseDto } from 'src/common/decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ResponseDto(CreateUserResponseDto)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
+  @ResponseDto(UserResponseDto)
   findAll() {
     return this.userService.findAll();
   }

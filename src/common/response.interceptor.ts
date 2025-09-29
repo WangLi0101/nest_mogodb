@@ -16,7 +16,9 @@ export class ResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         if (dto) {
-          data = plainToInstance(dto, data);
+          data = plainToInstance(dto, data, {
+            excludeExtraneousValues: true,
+          });
         }
         return {
           code: 0,
