@@ -18,7 +18,7 @@ const envPath = `.env.${process.env.NODE_ENV || 'development'}`;
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get(MONGO_DATABASE.MONGODB_URI),
+        uri: configService.get(MONGO_DATABASE.MONGODB_URL),
       }),
     }),
     UserModule,

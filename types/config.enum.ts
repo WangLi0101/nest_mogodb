@@ -1,5 +1,5 @@
 export enum MONGO_DATABASE {
-  MONGODB_URI = 'MONGODB_URI',
+  MONGODB_URL = 'MONGODB_URL',
 }
 
 export enum LogsEnum {
