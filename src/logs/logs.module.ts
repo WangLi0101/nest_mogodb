@@ -10,15 +10,18 @@ import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 import * as path from 'path';
+import { ConfigService } from '@nestjs/config';
+import { LogsEnum } from 'types/config.enum';
 
 @Module({
   imports: [
     // 配置 Winston 日志模块
     WinstonModule.forRootAsync({
-      useFactory: () => {
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
         // 控制台日志传输器配置
         const consoleTransports = new Console({
-          level: 'info', // 日志级别：info 及以上级别会输出到控制台
+          level: configService.get(LogsEnum.LOG_LEVEL), // 日志级别：info 及以上级别会输出到控制台
           format: winston.format.combine(
             winston.format.timestamp(), // 添加时间戳
             utilities.format.nestLike(), // 使用 NestJS 风格的日志格式
@@ -26,7 +29,7 @@ import * as path from 'path';
         });
 
         // 日志文件目录路径
-        const logs = path.join(process.cwd(), 'src/logFile');
+        const logs = path.join(process.cwd(), 'logFile');
 
         // 应用日志文件传输器配置（记录所有 info 级别及以上的日志）
         const appFileTransports = new DailyRotateFile({
@@ -60,8 +63,7 @@ import * as path from 'path';
 
         // 日志开关控制：通过环境变量 LOG_ON 控制是否启用文件日志
         // 默认启用（LOG_ON 不等于 'false' 时启用）
-        const logOn = false;
-
+        const logOn = configService.get(LogsEnum.LOG_ON) === 'true';
         // 返回日志传输器配置
         return {
           transports: [

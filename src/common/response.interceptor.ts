@@ -12,11 +12,11 @@ import { map, Observable } from 'rxjs';
 export class ResponseInterceptor implements NestInterceptor {
   constructor(private reflector: Reflector) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const dto = this.reflector.get('response-dto', context.getHandler());
+    const vo = this.reflector.get('response-vo', context.getHandler());
     return next.handle().pipe(
       map((data) => {
-        if (dto) {
-          data = plainToInstance(dto, data, {
+        if (vo) {
+          data = plainToInstance(vo, data, {
             excludeExtraneousValues: true,
           });
         }

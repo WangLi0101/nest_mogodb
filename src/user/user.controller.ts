@@ -10,7 +10,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseDto } from 'src/common/decorator';
+import { ResponseVo } from 'src/common/decorator';
 
 @Controller('user')
 export class UserController {
@@ -22,13 +22,13 @@ export class UserController {
   }
 
   @Get()
-  @ResponseDto(UserResponseDto)
+  @ResponseVo(UserResponseDto)
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  @ResponseDto(UserResponseDto)
+  @ResponseVo(UserResponseDto)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }

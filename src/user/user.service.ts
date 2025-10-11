@@ -15,11 +15,7 @@ export class UserService {
   }
 
   async findAll() {
-    const res = await this.userModel
-      .find()
-      .sort({ createdAt: -1 })
-      .lean()
-      .exec();
+    const res = await this.userModel.find().sort({ createdAt: -1 }).exec();
     return res;
   }
 

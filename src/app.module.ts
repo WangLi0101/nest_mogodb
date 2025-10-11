@@ -5,11 +5,22 @@ import { ResponseInterceptor } from './common/response.interceptor';
 import { GlobalFilter } from './common/global.filter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LogsModule } from './logs/logs.module';
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MONGO_DATABASE } from 'types/config.enum';
+const envPath = `.env.${process.env.NODE_ENV || 'development'}`;
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [envPath, '.env'],
+    }),
     LogsModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/nest'),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get(MONGO_DATABASE.MONGODB_URI),
+      }),
+    }),
     UserModule,
   ],
   controllers: [],

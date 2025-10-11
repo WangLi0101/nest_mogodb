@@ -1,4 +1,3 @@
 import { SetMetadata, Type } from '@nestjs/common';
 
-export const ResponseDto = <T>(dto: Type<T>) =>
-  SetMetadata('response-dto', dto);
+export const ResponseVo = <T>(vo: Type<T>) => SetMetadata('response-vo', vo);
