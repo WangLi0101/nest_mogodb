@@ -64,6 +64,7 @@ import { LogsEnum } from 'types/config.enum';
         // 日志开关控制：通过环境变量 LOG_ON 控制是否启用文件日志
         // 默认启用（LOG_ON 不等于 'false' 时启用）
         const logOn = configService.get(LogsEnum.LOG_ON) === 'true';
+
         // 返回日志传输器配置
         return {
           transports: [
